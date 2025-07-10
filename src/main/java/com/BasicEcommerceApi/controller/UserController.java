@@ -1,14 +1,14 @@
 package com.BasicEcommerceApi.controller;
 
+import com.BasicEcommerceApi.Request.ProductRequest;
 import com.BasicEcommerceApi.model.Product;
 import com.BasicEcommerceApi.model.User;
+import com.BasicEcommerceApi.service.ProductService;
 import com.BasicEcommerceApi.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -16,8 +16,8 @@ import java.util.List;
 @RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    @Autowired private UserService userService;
+    @Autowired private ProductService productService;
 
     @GetMapping("/profile")
     public ResponseEntity<User> getProfileInfo() {
@@ -30,4 +30,19 @@ public class UserController {
     public ResponseEntity<List<Product>> getAllProducts() {
         return ResponseEntity.ok(userService.getAllProduct());
     }
+
+    @GetMapping("/home")
+    public ResponseEntity<List<Product>> getProd(){
+        List<Product> products = productService.getAllProduct();
+        return ResponseEntity.ok(products);
+    }
+
+
+    @GetMapping("/product/{id}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
+        Product product = productService.getProductById(id);
+        return ResponseEntity.ok(product);
+    }
+
+
 }

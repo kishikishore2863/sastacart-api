@@ -2,6 +2,8 @@ package com.BasicEcommerceApi.service.impl;
 
 import com.BasicEcommerceApi.Request.ProductRequest;
 import com.BasicEcommerceApi.model.Product;
+import com.BasicEcommerceApi.model.ProductImage;
+import com.BasicEcommerceApi.repository.ProductImageRepository;
 import com.BasicEcommerceApi.repository.ProductRepository;
 import com.BasicEcommerceApi.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,12 +11,27 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
 
     @Autowired
     private ProductRepository productRepository;
+
+    @Autowired
+    private ProductImageRepository productImageRepository;
+
+//    @Override
+//    public String addProduct(ProductRequest request) {
+//        Product newProduct = new Product();
+//        newProduct.setName(request.getName());
+//        newProduct.setDescription(request.getDescription());
+//        newProduct.setPrice(request.getPrice());
+//        newProduct.setStockQuantity(request.getStockQuantity());
+//        productRepository.save(newProduct);
+//        return "product added successfully";
+//    }
 
     @Override
     public String addProduct(ProductRequest request) {
@@ -23,8 +40,20 @@ public class ProductServiceImpl implements ProductService {
         newProduct.setDescription(request.getDescription());
         newProduct.setPrice(request.getPrice());
         newProduct.setStockQuantity(request.getStockQuantity());
-        productRepository.save(newProduct);
-        return "product added successfully";
+
+        // Save product first to generate ID
+        Product savedProduct = productRepository.save(newProduct);
+
+        // Save images
+        List<ProductImage> images = request.getImageUrls().stream().map(url -> {
+            ProductImage image = new ProductImage();
+            image.setUrl(url);
+            image.setProduct(savedProduct);
+            return image;
+        }).collect(Collectors.toList());
+
+        productImageRepository.saveAll(images);
+        return "Product added successfully";
     }
 
     @Override
@@ -61,4 +90,13 @@ public class ProductServiceImpl implements ProductService {
             return "Product not found";
         }
     }
+
+    @Override
+    public Product getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + productId));
+    }
+
+
+
 }

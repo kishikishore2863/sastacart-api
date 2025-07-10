@@ -16,7 +16,7 @@ import java.util.Date;
 public class JWTUtil {
     private final String SECRET = "kjdcjkdsncksdkcdcbsuydbcusdbcudsbcusbdcudsbcuywegc";
     private final SecretKey key = Keys.hmacShaKeyFor(SECRET.getBytes());
-    private final long EXPIRATION = 1000*60*60;
+    private final long EXPIRATION = 1000*60*60*60;
 
     public SecretKey keyGrab(){
         return key;
